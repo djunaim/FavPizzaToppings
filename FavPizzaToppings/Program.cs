@@ -11,19 +11,22 @@ namespace FavPizzaToppings
         static void Main(string[] args)
         {
             // using newtonsoft.json to take json files and turn it into c#.
+            // File is taking file contents and turning it into string
+            // DeserializeObject is taking string and turning it into thing
             var pizzas = JsonConvert.DeserializeObject<List<Pizza>>(File.ReadAllText(@"./pizzas.json"));
 
-            // give list of toppings and order it alphabetically
+            // from list of pizzas select the toppings, join a comma in between them, and alphabetize it by itself
             var toppingLists = pizzas.Select(p => string.Join(",", p.Toppings.OrderBy(t => t)));
 
             // distinct linq method giving unique topping methods
             //var distinctToppingCombos = toppingLists.Distinct();
 
+            // string is topping combination and int will be how many times combo has appeared
             var countOfCombos = new Dictionary<string, int>();
             foreach (var combination in toppingLists)
             {
-                // loop over combos and if it doesn't contain the combination have it as 1
-                // but if the combination already exists add 1 more to it
+                // loop over toppingLists and if it doesn't exist, initialize the combination to 1
+                // else if the combination already exists with that key add 1 to it
                 if (!countOfCombos.ContainsKey(combination))
                 {
                     countOfCombos.Add(combination, 1);
@@ -35,6 +38,7 @@ namespace FavPizzaToppings
             }
 
             // order it by descending based on the number of times it was ordered and Take the first 20
+            // start with the most ordered -> least ordered
             var mostOrdered = countOfCombos.OrderByDescending(item => item.Value).Take(20);
 
             foreach (var (combination, count)  in mostOrdered)
